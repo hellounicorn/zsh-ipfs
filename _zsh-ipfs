@@ -64,6 +64,15 @@ _config_arguments=(
   'replace:<file> Replaces the config with <file>'
 )
 
+local -a _dht_arguments
+_dht_arguments=(
+  "query:<peerID> Run a 'findClosestPeers' query through the DHT"
+  "findprovs:<key> Run a 'FindProviders' query through the DHT"
+  "findpeer:<peerID> Run a 'FindPeer' query through the DHT"
+  "get:<key> Run a 'GetValue' query through the DHT"
+  "put:<key> <value> Run a 'PutValue' query through the DHT"
+)
+
 local -a _log_arguments
 _log_arguments=(
   'level:<subsystem> <level> Change the logging level'
@@ -91,6 +100,9 @@ _ipfs_subcommand(){
         ;;
         (rm)
           _arguments '--all[Remove all bootstrap peers.]'
+        ;;
+        (findprovs|get|put|query)
+          _arguments '(-v --verbose)'{-v,--verbose}'[Write extra information]'
         ;;
       esac
     ;;
@@ -142,6 +154,21 @@ case "$words[1]" in
       '--bool[Set a boolean value]' \
       '--json[Parse stringified JSON]'
     _ipfs_subcommand _config_arguments
+  ;;
+  (daemon)
+    _arguments \
+      '--init[Initialize IPFS with default settings if not already initialized]' \
+      '--routing[Overrides the routing option (dht, supernode)]' \
+      '--mount[Mounts IPFS to the filesystem]' \
+      '--writable[Enable writing objects (with POST, PUT and DELETE)]' \
+      '--mount-ipfs[Path to the mountpoint for IPFS (if using --mount)]' \
+      '--mount-ipns[Path to the mountpoint for IPNS (if using --mount)]' \
+      '--unrestricted-api[Allow API access to unlisted hashes]' \
+      '--disable-transport-encryption[Disable transport encryption (for debugging protocols)]' \
+      '--enable-gc[Enable automatic periodic repo garbage collection]'
+  ;;
+  (dht)
+    _ipfs_subcommand _dht_arguments
   ;;
   (log)
     _ipfs_subcommand _log_arguments
