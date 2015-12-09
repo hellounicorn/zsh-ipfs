@@ -24,13 +24,13 @@ _1st_arguments=(
   'name:IPFS namespace (IPNS) tool'
   'object:Interact with ipfs objects'
   'pin:Pin (and unpin) objects to local storage'
-  'ping:<peer ID> send echo request packets to IPFS hosts'
+  'ping:<peer ID> Send echo request packets to IPFS hosts'
   'refs:<ipfs-path> Lists links (references) from an object'
   'repo:Manipulate the IPFS repo'
   'resolve:Resolve the value of names to IPFS'
   'stats:Query IPFS statistics'
-  'swarm:swarm inspection tool'
-  'tar:utility functions for tar files in ipfs'
+  'swarm:Swarm inspection tool'
+  'tar:Utility functions for tar files in ipfs'
   'tour:[<id>] An introduction to IPFS'
   'update:Downloads and installs updates for IPFS (disabled)'
   'version:Shows ipfs version information'
@@ -39,7 +39,7 @@ _1st_arguments=(
 local -a _bitswap_arguments
 _bitswap_arguments=(
   'wantlist:Show blocks currently on the wantlist'
-  'stat:show some diagnostic information on the bitswap agent'
+  'stat:Show some diagnostic information on the bitswap agent'
   'unwant:<key> Remove a given block from your wantlist'
 )
 
@@ -48,6 +48,20 @@ _block_arguments=(
   'stat:<key> Print information of a raw IPFS block'
   'get:<key> Get a raw IPFS block'
   'put:<data> Stores input as an IPFS block'
+)
+
+local -a _bootstrap_arguments
+_bootstrap_arguments=(
+  'add:[<peer>] Add peers to the bootstrap list'
+  'rm:[<peer>] Removes peers from the bootstrap list'
+  'list:Show peers in the bootstrap list'
+)
+
+local -a _config_arguments
+_config_arguments=(
+  'show:Outputs the content of the config file'
+  'edit:Opens the config file for editing in $EDITOR'
+  'replace:<file> Replaces the config with <file>'
 )
 
 local -a _log_arguments
@@ -70,7 +84,13 @@ _ipfs_subcommand(){
     (options)
       case $line[1] in
         (wantlist)
-          _arguments '(-p --peer)'{-p,--peer}'[specify which peer to show wantlist for (default self)]'
+          _arguments '(-p --peer)'{-p,--peer}'[Specify which peer to show wantlist for (default self)]'
+        ;;
+        (add)
+          _arguments '--default[Add default bootstrap nodes]'
+        ;;
+        (rm)
+          _arguments '--all[Remove all bootstrap peers.]'
         ;;
       esac
     ;;
@@ -104,19 +124,31 @@ case "$words[1]" in
       '(-w --wrap-with-directory)'{-w,--wrap-with-directory}'[Wrap files with a directory object]' \
       '(-H --hidden)'{-h,--hidden}'[Include files that are hidden]' \
       '(-s --chunker)'{-s,--chunker}'[chunking algorithm to use]'
-    ;;
+  ;;
   (bitswap)
     _ipfs_subcommand _bitswap_arguments
-    ;;
+  ;;
   (block)
     _ipfs_subcommand _block_arguments
-    ;;
+  ;;
+  (bootstrap)
+    _ipfs_subcommand _bootstrap_arguments
+  ;;
+  (commands)
+    _arguments '(-f --flags)'{-f,--flags}'[Show command flags]'
+  ;;
+  (config)
+    _arguments \
+      '--bool[Set a boolean value]' \
+      '--json[Parse stringified JSON]'
+    _ipfs_subcommand _config_arguments
+  ;;
   (log)
     _ipfs_subcommand _log_arguments
-    ;;
+  ;;
   (mount)
     _arguments \
       '(-f --ipfs-path)'{-f,--ipfs-path}'[The path where IPFS should be mounted]' \
       '(-n --ipns-path)'{-n,--ipns-path}'[The path where IPNS should be mounted]'
-    ;;
+  ;;
 esac
