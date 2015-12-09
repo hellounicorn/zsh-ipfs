@@ -73,6 +73,17 @@ _dht_arguments=(
   "put:<key> <value> Run a 'PutValue' query through the DHT"
 )
 
+local -a _diag_arguments
+_diag_arguments=(
+  'net:Generates a network diagnostics report'
+  'sys:Prints out system diagnostic information.'
+)
+
+local -a _file_arguments
+_file_arguments=(
+  'ls:<ipfs-path> List directory contents for Unix-filesystem objects'
+)
+
 local -a _log_arguments
 _log_arguments=(
   'level:<subsystem> <level> Change the logging level'
@@ -103,6 +114,9 @@ _ipfs_subcommand(){
         ;;
         (findprovs|get|put|query)
           _arguments '(-v --verbose)'{-v,--verbose}'[Write extra information]'
+        ;;
+        (net)
+          _arguments '--vis[Output vis. one of: d3, dot]'
         ;;
       esac
     ;;
@@ -169,6 +183,22 @@ case "$words[1]" in
   ;;
   (dht)
     _ipfs_subcommand _dht_arguments
+  ;;
+  (diag)
+    _ipfs_subcommand _diag_arguments
+  ;;
+  (dns)
+    _arguments '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not a DNS link]'
+  ;;
+  (file)
+    _ipfs_subcommand _file_arguments
+  ;;
+  (get)
+    _arguments \
+      '(-o --output)'{-o,--output}'[The path where output should be stored]'\
+      '(-a --archive)'{-a,--archive}'[Output a TAR archive]' \
+      '(-C --compress)'{-C,--compress}'[Compress the output with GZIP compression]' \
+      '(-l --compression-level)'{-l,--compression-level}'[The level of compression (1-9)]'
   ;;
   (log)
     _ipfs_subcommand _log_arguments
