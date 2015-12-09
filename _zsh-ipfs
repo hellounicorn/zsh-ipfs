@@ -90,6 +90,12 @@ _log_arguments=(
   'tail:Read the logs'
 )
 
+local -a _name_arguments
+_name_arguments=(
+  'publish:<ipfs-path> Publish an object to IPNS'
+  'resolve:[<name>] Gets the value currently published at an IPNS name'
+)
+
 _ipfs_subcommand(){
   local curcontext="$curcontext" state line
   typeset -A opt_args
@@ -117,6 +123,17 @@ _ipfs_subcommand(){
         ;;
         (net)
           _arguments '--vis[Output vis. one of: d3, dot]'
+        ;;
+        (publish)
+          _arguments \
+            '--resolve[Resolve given path before publishing (default=true)]' \
+            '(-t --lifetime)'{-t,--lifetime}'[Time duration that the record will be valid for (default: 24hrs)]' \
+            '--ttl[Time duration this record should be cached for (caution: experimental)]'
+        ;;
+        (resolve)
+          _arguments \
+            '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not an IPNS name]' \
+            '(-n --nocache)'{-n,--nocache}'[Do not used cached entries]'
         ;;
       esac
     ;;
@@ -219,5 +236,8 @@ case "$words[1]" in
     _arguments \
       '(-f --ipfs-path)'{-f,--ipfs-path}'[The path where IPFS should be mounted]' \
       '(-n --ipns-path)'{-n,--ipns-path}'[The path where IPNS should be mounted]'
+  ;;
+  (name)
+    _ipfs_subcommand _name_arguments
   ;;
 esac
