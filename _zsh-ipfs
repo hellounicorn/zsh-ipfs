@@ -200,8 +200,20 @@ case "$words[1]" in
       '(-C --compress)'{-C,--compress}'[Compress the output with GZIP compression]' \
       '(-l --compression-level)'{-l,--compression-level}'[The level of compression (1-9)]'
   ;;
+  (id)
+    _arguments '(-f --format)'{-f,--format}'[Optional output format]'
+  ;;
+  (init)
+    _arguments \
+      '(-b --bits)'{-b,--bits}'[Number of bits to use in the generated RSA private key (defaults to 2048)]' \
+      '(-f --force)'{-f,--force}'[Overwrite existing config (if it exists)]' \
+      '(-e --empty-repo)'{-e,--empty-repo}'[Do not add and pin help files to the local storage]'
+  ;;
   (log)
     _ipfs_subcommand _log_arguments
+  ;;
+  (ls)
+    _arguments '(-v --headers)'{-v,--headers}'[Print table headers (Hash, Name, Size)]'
   ;;
   (mount)
     _arguments \
