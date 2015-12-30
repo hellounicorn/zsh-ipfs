@@ -369,4 +369,13 @@ case $MAIN_SUBCOMMAND in
     )
     _ipfs_subcommand _tar_arguments
   ;;
+  (tour)
+    local -a _tour_arguments
+    _tour_arguments=(
+      'list:Show a list of IPFS Tour topics'
+      'next:Show the next IPFS Tour topic'
+      'restart:Restart the IPFS Tour'
+    )
+    _ipfs_subcommand _tour_arguments
+  ;;
 esac
