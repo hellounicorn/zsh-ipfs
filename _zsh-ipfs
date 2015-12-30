@@ -103,19 +103,22 @@ _object_arguments=(
   'get:<key> Get and serialize the DAG node named by <key>'
   'put:<data> Stores input as a DAG object, outputs its key'
   'stat:<key> Get stats for the DAG node named by <key>'
-  'new: [<template>] creates a new object from an ipfs template'
-  'patch: <root> <command> <args> Create a new merkledag object based on an existing one'
+  'new:[<template>] creates a new object from an ipfs template'
+  'patch:<root> <command> <args> Create a new merkledag object based on an existing one'
 )
 
 local -a _pin_arguments
 _pin_arguments=(
-  'add: <ipfs-path> Pins objects to local storage'
-  'rm: <ipfs-path> Removes the pinned object from local storage. (By default, recursively. Use -r=false for direct pins)'
-  'ls: List objects pinned to local storage'
+  'add:<ipfs-path> Pins objects to local storage'
+  'rm:<ipfs-path> Removes the pinned object from local storage. (By default, recursively. Use -r=false for direct pins)'
+  'ls:List objects pinned to local storage'
 )
 
 local -a _refs_arguments
-_refs_arguments='local: Lists all local references'
+_refs_arguments='local:Lists all local references'
+
+local -a _repo_arguments
+_repo_arguments='gc:Perform a garbage collection sweep on the repo'
 
 _ipfs_subcommand(){
   local curcontext="$curcontext" state line
@@ -178,6 +181,9 @@ _ipfs_subcommand(){
         ;;
         (patch)
           _arguments '(-p --create)'{-p,--create}'[Create intermediate directories on add-link]'
+        ;;
+        (gc)
+          _arguments '(-q --quiet)'{-q,--quiet}'[Write minimal output]'
         ;;
       esac
     ;;
@@ -300,5 +306,8 @@ case "$words[1]" in
       '(-u --unique)'{-u,--unique}'[Omit duplicate refs from output]' \
       '(-r --recursive)'{-r,--recursive}'[Recursively list links of child nodes]'
     _ipfs_subcommand _refs_arguments
+  ;;
+  (repo)
+    _ipfs_subcommand _repo_arguments
   ;;
 esac
