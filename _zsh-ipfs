@@ -96,6 +96,17 @@ _name_arguments=(
   'resolve:[<name>] Gets the value currently published at an IPNS name'
 )
 
+local -a _object_arguments
+_object_arguments=(
+    'data:<key> Outputs the raw bytes in an IPFS object'
+    'links:<key> Outputs the links pointed to by the specified object'
+    'get:<key> Get and serialize the DAG node named by <key>'
+    'put:<data> Stores input as a DAG object, outputs its key'
+    'stat:<key> Get stats for the DAG node named by <key>'
+    'new: [<template>] creates a new object from an ipfs template'
+    'patch: <root> <command> <args> Create a new merkledag object based on an existing one'
+)
+
 _ipfs_subcommand(){
   local curcontext="$curcontext" state line
   typeset -A opt_args
@@ -134,6 +145,9 @@ _ipfs_subcommand(){
           _arguments \
             '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not an IPNS name]' \
             '(-n --nocache)'{-n,--nocache}'[Do not used cached entries]'
+        ;;
+        (patch)
+          _arguments '(-p --create)'{-p,--create}'[Create intermediate directories on add-link]'
         ;;
       esac
     ;;
@@ -239,5 +253,8 @@ case "$words[1]" in
   ;;
   (name)
     _ipfs_subcommand _name_arguments
+  ;;
+  (object)
+    _ipfs_subcommand _object_arguments
   ;;
 esac
