@@ -349,4 +349,16 @@ case $MAIN_SUBCOMMAND in
     _stats_arguments='bw:Print ipfs bandwidth information'
     _ipfs_subcommand _stats_arguments
   ;;
+  (swarm)
+    # TODO add level 3 subcommand autocompletion for `addrs` and `filters`
+    local -a _swarm_arguments
+    _swarm_arguments=(
+      'addrs:List known addresses. Useful to debug.'
+      'connect:<address> Open connection to a given address'
+      'disconnect:<address> Close connection to a given address'
+      'filters:Manipulate address filters'
+      'peers:List peers with open connections'
+    )
+    _ipfs_subcommand _swarm_arguments
+  ;;
 esac
