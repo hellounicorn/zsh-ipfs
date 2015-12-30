@@ -36,90 +36,6 @@ _1st_arguments=(
   'version:Shows ipfs version information'
 )
 
-local -a _bitswap_arguments
-_bitswap_arguments=(
-  'wantlist:Show blocks currently on the wantlist'
-  'stat:Show some diagnostic information on the bitswap agent'
-  'unwant:<key> Remove a given block from your wantlist'
-)
-
-local -a _block_arguments
-_block_arguments=(
-  'stat:<key> Print information of a raw IPFS block'
-  'get:<key> Get a raw IPFS block'
-  'put:<data> Stores input as an IPFS block'
-)
-
-local -a _bootstrap_arguments
-_bootstrap_arguments=(
-  'add:[<peer>] Add peers to the bootstrap list'
-  'rm:[<peer>] Removes peers from the bootstrap list'
-  'list:Show peers in the bootstrap list'
-)
-
-local -a _config_arguments
-_config_arguments=(
-  'show:Outputs the content of the config file'
-  'edit:Opens the config file for editing in $EDITOR'
-  'replace:<file> Replaces the config with <file>'
-)
-
-local -a _dht_arguments
-_dht_arguments=(
-  "query:<peerID> Run a 'findClosestPeers' query through the DHT"
-  "findprovs:<key> Run a 'FindProviders' query through the DHT"
-  "findpeer:<peerID> Run a 'FindPeer' query through the DHT"
-  "get:<key> Run a 'GetValue' query through the DHT"
-  "put:<key> <value> Run a 'PutValue' query through the DHT"
-)
-
-local -a _diag_arguments
-_diag_arguments=(
-  'net:Generates a network diagnostics report'
-  'sys:Prints out system diagnostic information.'
-)
-
-local -a _file_arguments
-_file_arguments=(
-  'ls:<ipfs-path> List directory contents for Unix-filesystem objects'
-)
-
-local -a _log_arguments
-_log_arguments=(
-  'level:<subsystem> <level> Change the logging level'
-  'tail:Read the logs'
-)
-
-local -a _name_arguments
-_name_arguments=(
-  'publish:<ipfs-path> Publish an object to IPNS'
-  'resolve:[<name>] Gets the value currently published at an IPNS name'
-)
-
-local -a _object_arguments
-_object_arguments=(
-  'data:<key> Outputs the raw bytes in an IPFS object'
-  'links:<key> Outputs the links pointed to by the specified object'
-  'get:<key> Get and serialize the DAG node named by <key>'
-  'put:<data> Stores input as a DAG object, outputs its key'
-  'stat:<key> Get stats for the DAG node named by <key>'
-  'new:[<template>] creates a new object from an ipfs template'
-  'patch:<root> <command> <args> Create a new merkledag object based on an existing one'
-)
-
-local -a _pin_arguments
-_pin_arguments=(
-  'add:<ipfs-path> Pins objects to local storage'
-  'rm:<ipfs-path> Removes the pinned object from local storage. (By default, recursively. Use -r=false for direct pins)'
-  'ls:List objects pinned to local storage'
-)
-
-local -a _refs_arguments
-_refs_arguments='local:Lists all local references'
-
-local -a _repo_arguments
-_repo_arguments='gc:Perform a garbage collection sweep on the repo'
-
 _ipfs_subcommand(){
   local curcontext="$curcontext" state line
   typeset -A opt_args
@@ -137,7 +53,7 @@ _ipfs_subcommand(){
           _arguments '(-p --peer)'{-p,--peer}'[Specify which peer to show wantlist for (default self)]'
         ;;
         (add)
-          case $2 in
+          case $MAIN_SUBCOMMAND in
             (pin)
               _arguments '(-r --recursive)'{-r,--recursive}'[Recursively pin the object linked to by the specified object(s)]'
             ;;
@@ -147,7 +63,7 @@ _ipfs_subcommand(){
             esac
         ;;
         (rm)
-          case $2 in
+          case $MAIN_SUBCOMMAND in
             (pin)
               _arguments '(-r --recursive)'{-r,--recursive}'[Recursively unpin the object linked to by the specified object(s)]'
             ;;
@@ -185,6 +101,17 @@ _ipfs_subcommand(){
         (gc)
           _arguments '(-q --quiet)'{-q,--quiet}'[Write minimal output]'
         ;;
+        (bw)
+          case $MAIN_SUBCOMMAND in
+            (stats)
+              _arguments \
+                '(-p --peer)'{-p,--peer}'[Specify a peer to print bandwidth for]' \
+                '(-t --proto)'{-t,--proto}'[Specify a protocol to print bandwidth for]' \
+                '--poll[Print bandwidth at an interval]' \
+                '(-i  --interval)'{-i,--interval}'[Interval to wait between updating output]'
+              ;;
+            esac
+        ;;
       esac
     ;;
   esac
@@ -206,7 +133,8 @@ if (( CURRENT == 1 )); then
   return
 fi
 
-case "$words[1]" in
+MAIN_SUBCOMMAND="$words[1]"
+case $MAIN_SUBCOMMAND in
   (add)
     _arguments \
       '(-r --recursive)'{-r,--recursive}'[Add directory paths recursively]' \
@@ -219,13 +147,31 @@ case "$words[1]" in
       '(-s --chunker)'{-s,--chunker}'[chunking algorithm to use]'
   ;;
   (bitswap)
+    local -a _bitswap_arguments
+    _bitswap_arguments=(
+      'wantlist:Show blocks currently on the wantlist'
+      'stat:Show some diagnostic information on the bitswap agent'
+      'unwant:<key> Remove a given block from your wantlist'
+    )
     _ipfs_subcommand _bitswap_arguments
   ;;
   (block)
+    local -a _block_arguments
+    _block_arguments=(
+      'stat:<key> Print information of a raw IPFS block'
+      'get:<key> Get a raw IPFS block'
+      'put:<data> Stores input as an IPFS block'
+    )
     _ipfs_subcommand _block_arguments
   ;;
   (bootstrap)
-    _ipfs_subcommand _bootstrap_arguments "bootstrap"
+    local -a _bootstrap_arguments
+    _bootstrap_arguments=(
+      'add:[<peer>] Add peers to the bootstrap list'
+      'rm:[<peer>] Removes peers from the bootstrap list'
+      'list:Show peers in the bootstrap list'
+    )
+    _ipfs_subcommand _bootstrap_arguments
   ;;
   (commands)
     _arguments '(-f --flags)'{-f,--flags}'[Show command flags]'
@@ -234,6 +180,12 @@ case "$words[1]" in
     _arguments \
       '--bool[Set a boolean value]' \
       '--json[Parse stringified JSON]'
+    local -a _config_arguments
+    _config_arguments=(
+      'show:Outputs the content of the config file'
+      'edit:Opens the config file for editing in $EDITOR'
+      'replace:<file> Replaces the config with <file>'
+    )
     _ipfs_subcommand _config_arguments
   ;;
   (daemon)
@@ -249,15 +201,32 @@ case "$words[1]" in
       '--enable-gc[Enable automatic periodic repo garbage collection]'
   ;;
   (dht)
+    local -a _dht_arguments
+    _dht_arguments=(
+      "query:<peerID> Run a 'findClosestPeers' query through the DHT"
+      "findprovs:<key> Run a 'FindProviders' query through the DHT"
+      "findpeer:<peerID> Run a 'FindPeer' query through the DHT"
+      "get:<key> Run a 'GetValue' query through the DHT"
+      "put:<key> <value> Run a 'PutValue' query through the DHT"
+    )
     _ipfs_subcommand _dht_arguments
   ;;
   (diag)
+    local -a _diag_arguments
+    _diag_arguments=(
+      'net:Generates a network diagnostics report'
+      'sys:Prints out system diagnostic information.'
+    )
     _ipfs_subcommand _diag_arguments
   ;;
   (dns)
     _arguments '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not a DNS link]'
   ;;
   (file)
+    local -a _file_arguments
+    _file_arguments=(
+      'ls:<ipfs-path> List directory contents for Unix-filesystem objects'
+    )
     _ipfs_subcommand _file_arguments
   ;;
   (get)
@@ -277,6 +246,11 @@ case "$words[1]" in
       '(-e --empty-repo)'{-e,--empty-repo}'[Do not add and pin help files to the local storage]'
   ;;
   (log)
+    local -a _log_arguments
+    _log_arguments=(
+      'level:<subsystem> <level> Change the logging level'
+      'tail:Read the logs'
+    )
     _ipfs_subcommand _log_arguments
   ;;
   (ls)
@@ -288,13 +262,34 @@ case "$words[1]" in
       '(-n --ipns-path)'{-n,--ipns-path}'[The path where IPNS should be mounted]'
   ;;
   (name)
+    local -a _name_arguments
+    _name_arguments=(
+      'publish:<ipfs-path> Publish an object to IPNS'
+      'resolve:[<name>] Gets the value currently published at an IPNS name'
+    )
     _ipfs_subcommand _name_arguments
   ;;
   (object)
+    local -a _object_arguments
+    _object_arguments=(
+      'data:<key> Outputs the raw bytes in an IPFS object'
+      'links:<key> Outputs the links pointed to by the specified object'
+      'get:<key> Get and serialize the DAG node named by <key>'
+      'put:<data> Stores input as a DAG object, outputs its key'
+      'stat:<key> Get stats for the DAG node named by <key>'
+      'new:[<template>] creates a new object from an ipfs template'
+      'patch:<root> <command> <args> Create a new merkledag object based on an existing one'
+    )
     _ipfs_subcommand _object_arguments
   ;;
   (pin)
-    _ipfs_subcommand _pin_arguments "pin"
+    local -a _pin_arguments
+    _pin_arguments=(
+      'add:<ipfs-path> Pins objects to local storage'
+      'rm:<ipfs-path> Removes the pinned object from local storage. (By default, recursively. Use -r=false for direct pins)'
+      'ls:List objects pinned to local storage'
+    )
+    _ipfs_subcommand _pin_arguments
   ;;
   (ping)
     _arguments '(-n --count)'{-n,--count}'[Number of ping messages to send]'
@@ -305,12 +300,21 @@ case "$words[1]" in
       '(-e --edges)'{-e,--edges}'[Emit edge format: `<from> -> <to>`]' \
       '(-u --unique)'{-u,--unique}'[Omit duplicate refs from output]' \
       '(-r --recursive)'{-r,--recursive}'[Recursively list links of child nodes]'
+    local -a _refs_arguments
+    _refs_arguments='local:Lists all local references'
     _ipfs_subcommand _refs_arguments
   ;;
   (repo)
+    local -a _repo_arguments
+    _repo_arguments='gc:Perform a garbage collection sweep on the repo'
     _ipfs_subcommand _repo_arguments
   ;;
   (resolve)
     _arguments '(-r --recursive)'{-r,--recursive}'[Resolve until the result is an IPFS name]'
+  ;;
+  (stats)
+    local -a _stats_arguments
+    _stats_arguments='bw:Print ipfs bandwidth information'
+    _ipfs_subcommand _stats_arguments
   ;;
 esac
