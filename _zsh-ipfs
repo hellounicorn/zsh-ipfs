@@ -310,4 +310,7 @@ case "$words[1]" in
   (repo)
     _ipfs_subcommand _repo_arguments
   ;;
+  (resolve)
+    _arguments '(-r --recursive)'{-r,--recursive}'[Resolve until the result is an IPFS name]'
+  ;;
 esac
