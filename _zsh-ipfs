@@ -98,13 +98,20 @@ _name_arguments=(
 
 local -a _object_arguments
 _object_arguments=(
-    'data:<key> Outputs the raw bytes in an IPFS object'
-    'links:<key> Outputs the links pointed to by the specified object'
-    'get:<key> Get and serialize the DAG node named by <key>'
-    'put:<data> Stores input as a DAG object, outputs its key'
-    'stat:<key> Get stats for the DAG node named by <key>'
-    'new: [<template>] creates a new object from an ipfs template'
-    'patch: <root> <command> <args> Create a new merkledag object based on an existing one'
+  'data:<key> Outputs the raw bytes in an IPFS object'
+  'links:<key> Outputs the links pointed to by the specified object'
+  'get:<key> Get and serialize the DAG node named by <key>'
+  'put:<data> Stores input as a DAG object, outputs its key'
+  'stat:<key> Get stats for the DAG node named by <key>'
+  'new: [<template>] creates a new object from an ipfs template'
+  'patch: <root> <command> <args> Create a new merkledag object based on an existing one'
+)
+
+local -a _pin_arguments
+_pin_arguments=(
+  'add: <ipfs-path> Pins objects to local storage'
+  'rm: <ipfs-path> Removes the pinned object from local storage. (By default, recursively. Use -r=false for direct pins)'
+  'ls: List objects pinned to local storage'
 )
 
 _ipfs_subcommand(){
@@ -124,10 +131,30 @@ _ipfs_subcommand(){
           _arguments '(-p --peer)'{-p,--peer}'[Specify which peer to show wantlist for (default self)]'
         ;;
         (add)
-          _arguments '--default[Add default bootstrap nodes]'
+          case $2 in
+            (pin)
+              _arguments '(-r --recursive)'{-r,--recursive}'[Recursively pin the object linked to by the specified object(s)]'
+            ;;
+            (bootstrap)
+              _arguments '--default[Add default bootstrap nodes]'
+            ;;
+            esac
         ;;
         (rm)
-          _arguments '--all[Remove all bootstrap peers.]'
+          case $2 in
+            (pin)
+              _arguments '(-r --recursive)'{-r,--recursive}'[Recursively unpin the object linked to by the specified object(s)]'
+            ;;
+            (bootstrap)
+              _arguments '--all[Remove all bootstrap peers.]'
+            ;;
+            esac
+        ;;
+        (ls)
+          _arguments \
+            '(-t --type)'{-t,--type}'[The type of pinned keys to list. Can be "direct", "indirect", "recursive", or "all". Defaults to "recursive"]' \
+            '(-n --count)'{-n,--count}'[Show refcount when listing indirect pins]' \
+            '(-q --quiet)'{-q,--quiet}'[Write just hashes of objects]'
         ;;
         (findprovs|get|put|query)
           _arguments '(-v --verbose)'{-v,--verbose}'[Write extra information]'
@@ -189,7 +216,7 @@ case "$words[1]" in
     _ipfs_subcommand _block_arguments
   ;;
   (bootstrap)
-    _ipfs_subcommand _bootstrap_arguments
+    _ipfs_subcommand _bootstrap_arguments "bootstrap"
   ;;
   (commands)
     _arguments '(-f --flags)'{-f,--flags}'[Show command flags]'
@@ -256,5 +283,8 @@ case "$words[1]" in
   ;;
   (object)
     _ipfs_subcommand _object_arguments
+  ;;
+  (pin)
+    _ipfs_subcommand _pin_arguments "pin"
   ;;
 esac
