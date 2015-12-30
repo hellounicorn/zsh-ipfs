@@ -378,4 +378,10 @@ case $MAIN_SUBCOMMAND in
     )
     _ipfs_subcommand _tour_arguments
   ;;
+  (version)
+    _arguments \
+      '(-n --number)'{-n,--number}'[Only show the version number]' \
+      '--commit[Show the commit hash]' \
+      '--repo[Show repo version]'
+  ;;
 esac
