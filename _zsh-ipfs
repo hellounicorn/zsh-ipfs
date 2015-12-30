@@ -50,7 +50,11 @@ _ipfs_subcommand(){
     (options)
       case $line[1] in
         (wantlist)
-          _arguments '(-p --peer)'{-p,--peer}'[Specify which peer to show wantlist for (default self)]'
+          case $MAIN_SUBCOMMAND in
+            (bitswap)
+              _arguments '(-p --peer)'{-p,--peer}'[Specify which peer to show wantlist for (default self)]'
+            ;;
+          esac
         ;;
         (add)
           case $MAIN_SUBCOMMAND in
@@ -73,33 +77,61 @@ _ipfs_subcommand(){
             esac
         ;;
         (ls)
-          _arguments \
-            '(-t --type)'{-t,--type}'[The type of pinned keys to list. Can be "direct", "indirect", "recursive", or "all". Defaults to "recursive"]' \
-            '(-n --count)'{-n,--count}'[Show refcount when listing indirect pins]' \
-            '(-q --quiet)'{-q,--quiet}'[Write just hashes of objects]'
+          case $MAIN_SUBCOMMAND in
+            (pin)
+              _arguments \
+                '(-t --type)'{-t,--type}'[The type of pinned keys to list. Can be "direct", "indirect", "recursive", or "all". Defaults to "recursive"]' \
+                '(-n --count)'{-n,--count}'[Show refcount when listing indirect pins]' \
+                '(-q --quiet)'{-q,--quiet}'[Write just hashes of objects]'
+            ;;
+          esac
         ;;
         (findprovs|get|put|query)
-          _arguments '(-v --verbose)'{-v,--verbose}'[Write extra information]'
+          case $MAIN_SUBCOMMAND in
+            (dht)
+              _arguments '(-v --verbose)'{-v,--verbose}'[Write extra information]'
+            ;;
+          esac
         ;;
         (net)
-          _arguments '--vis[Output vis. one of: d3, dot]'
+          case $MAIN_SUBCOMMAND in
+            (diag)
+              _arguments '--vis[Output vis. one of: d3, dot]'
+            ;;
+          esac
         ;;
         (publish)
-          _arguments \
-            '--resolve[Resolve given path before publishing (default=true)]' \
-            '(-t --lifetime)'{-t,--lifetime}'[Time duration that the record will be valid for (default: 24hrs)]' \
-            '--ttl[Time duration this record should be cached for (caution: experimental)]'
+          case $MAIN_SUBCOMMAND in
+            (name)
+              _arguments \
+                '--resolve[Resolve given path before publishing (default=true)]' \
+                '(-t --lifetime)'{-t,--lifetime}'[Time duration that the record will be valid for (default: 24hrs)]' \
+                '--ttl[Time duration this record should be cached for (caution: experimental)]'
+            ;;
+          esac
         ;;
         (resolve)
-          _arguments \
-            '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not an IPNS name]' \
-            '(-n --nocache)'{-n,--nocache}'[Do not used cached entries]'
+          case $MAIN_SUBCOMMAND in
+            (name)
+              _arguments \
+                '(-r --recursive)'{-r,--recursive}'[Resolve until the result is not an IPNS name]' \
+                '(-n --nocache)'{-n,--nocache}'[Do not used cached entries]'
+              ;;
+            esac
         ;;
         (patch)
-          _arguments '(-p --create)'{-p,--create}'[Create intermediate directories on add-link]'
+          case $MAIN_SUBCOMMAND in
+            (object)
+              _arguments '(-p --create)'{-p,--create}'[Create intermediate directories on add-link]'
+            ;;
+          esac
         ;;
         (gc)
-          _arguments '(-q --quiet)'{-q,--quiet}'[Write minimal output]'
+          case $MAIN_SUBCOMMAND in
+            (repo)
+              _arguments '(-q --quiet)'{-q,--quiet}'[Write minimal output]'
+            ;;
+          esac
         ;;
         (bw)
           case $MAIN_SUBCOMMAND in
