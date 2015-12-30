@@ -287,4 +287,7 @@ case "$words[1]" in
   (pin)
     _ipfs_subcommand _pin_arguments "pin"
   ;;
+  (ping)
+    _arguments '(-n --count)'{-n,--count}'[Number of ping messages to send]'
+  ;;
 esac
