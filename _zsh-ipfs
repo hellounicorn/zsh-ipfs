@@ -361,4 +361,12 @@ case $MAIN_SUBCOMMAND in
     )
     _ipfs_subcommand _swarm_arguments
   ;;
+  (tar)
+    local -a _tar_arguments
+    _tar_arguments=(
+      'add:<file> Import a tar file into ipfs'
+      'cat:<path> Export a tar file from ipfs'
+    )
+    _ipfs_subcommand _tar_arguments
+  ;;
 esac
