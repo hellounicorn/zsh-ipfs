@@ -114,6 +114,9 @@ _pin_arguments=(
   'ls: List objects pinned to local storage'
 )
 
+local -a _refs_arguments
+_refs_arguments='local: Lists all local references'
+
 _ipfs_subcommand(){
   local curcontext="$curcontext" state line
   typeset -A opt_args
@@ -289,5 +292,13 @@ case "$words[1]" in
   ;;
   (ping)
     _arguments '(-n --count)'{-n,--count}'[Number of ping messages to send]'
+  ;;
+  (refs)
+    _arguments \
+      '--format[Emit edges with given format. tokens: <src> <dst> <linkname>]' \
+      '(-e --edges)'{-e,--edges}'[Emit edge format: `<from> -> <to>`]' \
+      '(-u --unique)'{-u,--unique}'[Omit duplicate refs from output]' \
+      '(-r --recursive)'{-r,--recursive}'[Recursively list links of child nodes]'
+    _ipfs_subcommand _refs_arguments
   ;;
 esac
