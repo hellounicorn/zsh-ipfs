@@ -409,7 +409,7 @@ case $MAIN_SUBCOMMAND in
       '(-t --trickle)'{-t,--trickle}'[Use trickle-dag format for dag generation.]' \
       '(-n --only-hash)'{-n,--only-hash}'[Only chunk and hash - do not write to disk.]' \
       '(-w --wrap-with-directory)'{-w,--wrap-with-directory}'[Wrap files with a directory object.]' \
-      '(-s --chunker)'{-s,--chunker}'[Chunking algorithm, size-[bytes] or rabin-[min]-[avg]-[max]. Default: size-262144.]' \
+      '(-s --chunker)'{-s,--chunker}'[Chunking algorithm, size-(bytes) or rabin-(min)-(avg)-(max). Default: size-262144.]' \
       '(--pin)--pin[Pin this object when adding. Default: true.]' \
       '(--raw-leaves)--raw-leaves[Use raw blocks for leaf nodes. (experimental).]' \
       '(--nocopy)--nocopy[Add the file using filestore. Implies raw-leaves. (experimental).]' \
